@@ -4,13 +4,13 @@ import librosa.display
 import  numpy as np
 
 # Carregar Sinal de Audio .wav 1
-sig, sr = librosa.load(r'C:\Users\jeanm\Documents\Filter-Project\Data\Voz01_16KHz.wav', duration=8.0)
+sig, sr = librosa.load(r'/home/damasceno/Documents/College/UFPA/5st Semester/Digital Signal Processing/Task/Codes/Filter-Project/Data/moutain_king_16KHz.wav', duration=8.0)
 #ipd.Audio(sig, rate=sr)
 print ("Taxa de amostragem Sinal 1: ", sr)
 print ("Numero de amostras Sinal 1: ", sig.shape)
 
 Fs = 16000
-n = np.arange(0, 8, 1/Fs)
+n = np.arange(0, 8, 1/Fs).
 
 # Plotar sinal de audio 1
 plt.rcParams['font.family'] = ['DejaVu Sans']
@@ -76,7 +76,7 @@ plt.tight_layout()
 plt.show()
 
 # Carregar Sinal de Audio .wav 2
-sig2, sr2 = librosa.load(r'C:\Users\jeanm\Documents\Filter-Project\Data\Voz02_16KHz.wav', duration=8.0)
+sig2, sr2 = librosa.load(r'/home/damasceno/Documents/College/UFPA/5st Semester/Digital Signal Processing/Task/Codes/Filter-Project/Data/Voz02_16KHz.wav', duration=8.0)
 #ipd.Audio(sig2, rate=sr2)
 print ("Taxa de amostragem Sinal 2: ", sr2)
 print ("Numero de amostras Sinal 2: ", sig2.shape)

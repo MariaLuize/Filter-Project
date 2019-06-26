@@ -4,7 +4,7 @@ import wave
 import sys
 
 # Extract Raw Audio from Wav File
-spf = wave.open(r'C:\Users\jeanm\Documents\Filter-Project\Data\Voz01_16KHz.wav')
+spf = wave.open(r'/home/damasceno/Documents/College/UFPA/5st Semester/Digital Signal Processing/Task/Codes/Filter-Project/Data/mountain_king_16kHz.wav')
 # Caso Stereo
 if spf.getnchannels() == 2:
     print('Just mono files')
@@ -13,17 +13,10 @@ if spf.getnchannels() == 2:
 Fs = 16000  # Frequência de Amostragem
 n = np.arange(0, 8, 1/Fs)  # Amostras
 
-sz = 44100  # Read and process 1 second at a time.
+#sz = 44100  # Read and process 1 second at a time.
 signal = np.frombuffer(spf.readframes(128000), dtype=np.int16)
-left, right = signal[0::2], signal[1::2]
+#left, right = signal[0::2], signal[1::2]
 #print(len(signal))
-
-
-
-# Transformada de Fourier Discreta
-lf, rf = abs(np.fft.rfft(left)), abs(np.fft.rfft(right))
-# spectrum = np.fft.rfft(right)
-# freqs = np.fft.fftfreq(len(spectrum))
 
 # Sinal Portadora de transmissão
 Fc = 6
@@ -34,18 +27,18 @@ plt.title('Sinal Portadora')
 plt.plot(n, carrier)
 plt.show()
 
-# # Criação de sinal Modulante
-# Fm = 0.5
-# Am = 1
-# m = Am*np.sin(2*np.pi*Fm*n)
-# plt.figure(figsize=(12, 4))
-# plt.title('Sinal Original')
-# plt.plot(n, m)
-# plt.show()
+#Criação de sinal Modulante
+Fm = 0.5
+Am = 1
+m = Am*np.cos(2*np.pi*Fm*n)
+plt.figure(figsize=(12, 4))
+plt.title('Sinal Original')
+plt.plot(n, m)
+plt.show()
 
 # Modulação Sinal original com portadora
-#s = carrier * (1 + m/Ac)
-s = carrier * signal
+s = carrier * (1 + m/Ac)
+#s = carrier * signal
 plt.figure(figsize=(12, 4))
 plt.plot(n, s)
 plt.title('Sinal Modulado')
@@ -54,14 +47,23 @@ plt.ylabel('Amplitude')
 plt.grid()
 plt.show()
 
+# Transformada de Fourier Discreta
+#lf, rf = abs(np.fft.rfft(left)), abs(np.fft.rfft(right))
+spectrum = np.fft.fft(s)
+freqs = np.fft.fftfreq(len(spectrum))
+magnitude = np.abs(spectrum)
+phase = np.angle(spectrum)
+
 #   Graficos de espectros
 plt.subplot(2, 1, 1)
-plt.magnitude_spectrum(s, Fs=Fs, color='C1')
+#plt.magnitude_spectrum(s, Fs=Fs, color='C1')
+plt.plot(freqs, magnitude)
 plt.title('Espectros do Sinal Modulado')
 plt.ylabel("Magnitude")
 plt.xlabel('Frequência (Hz)')
 plt.subplot(2, 1, 2)
-plt.phase_spectrum(s, Fs=Fs, color='C2')
+#plt.phase_spectrum(s, Fs=Fs, color='C2')
+plt.plot(freqs, phase)
 plt.xlabel('Frequência (Hz)')
 plt.ylabel("Fase")
 plt.tight_layout()
@@ -70,7 +72,7 @@ plt.show()
 # Demodulação do sinal
 fa = 10
 h = s * np.cos(2*np.pi*fa*n)
-plt.figure(figsize=(12, 4))
+a = plt.figure(figsize=(12, 4))
 plt.plot(n, h)
 plt.title('Sinal Demodulado')
 plt.xlabel('Tempo(s)')
@@ -78,17 +80,22 @@ plt.ylabel('Amplitude')
 plt.grid()
 plt.show()
 
-#magnitude = np.abs(spectrum)
-#phase = np.angle(spectrum)
+# Transformada de Fourier Discreta
+spectrum = np.fft.rfft(h)
+freqs = np.fft.fftfreq(len(spectrum))
+magnitude = np.abs(spectrum)
+phase = np.angle(spectrum)
 
 # Graficos de espectros
 plt.subplot(2, 1, 1)
-plt.magnitude_spectrum(h, Fs=Fs, color='C1')
+#plt.magnitude_spectrum(h, Fs=Fs, color='C1')
+plt.plot(freqs, magnitude)
 plt.title('Espectros do Sinal Demodulado')
 plt.ylabel("Magnitude")
 plt.xlabel('Frequência (Hz)')
 plt.subplot(2, 1, 2)
-plt.phase_spectrum(h, Fs=Fs, color='C2')
+#plt.phase_spectrum(h, Fs=Fs, color='C2')
+plt.plot(freqs, phase)
 plt.xlabel('Frequência (Hz)')
 plt.ylabel("Fase")
 plt.tight_layout()
