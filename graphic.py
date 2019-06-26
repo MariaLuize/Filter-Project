@@ -60,11 +60,11 @@ plt.subplot(2, 1, 1)
 plt.plot(freqs, magnitude)
 plt.title('Espectros do Sinal Modulado')
 plt.ylabel("Magnitude")
-plt.xlabel('Frequência (Hz)')
+plt.xlabel('Frequência (kHz)')
 plt.subplot(2, 1, 2)
-#plt.phase_spectrum(s, Fs=Fs, color='C2')
-plt.plot(freqs, phase)
-plt.xlabel('Frequência (Hz)')
+plt.phase_spectrum(s, Fs=Fs, color='C2')
+#plt.plot(freqs, phase)
+plt.xlabel('Frequência (kHz)')
 plt.ylabel("Fase")
 plt.tight_layout()
 plt.show()
@@ -103,7 +103,7 @@ plt.show()
 
 
 # Extract Raw Audio from Wav File
-spf1 = wave.open(r'C:\Users\jeanm\Documents\Filter-Project\Data\Voz02_16KHz.wav')
+spf1 = wave.open(r'/home/damasceno/Documents/College/UFPA/5st Semester/Digital Signal Processing/Task/Codes/Filter-Project/Data/Voz01_16KHz.wav')
 # Caso Stereo
 if spf1.getnchannels() == 2:
     print('Just mono files')
@@ -138,8 +138,7 @@ plt.show()
 # plt.show()
 
 # Modulação Sinal original com portadora
-#s = carrier * (1 + m/Ac)
-s1 = carrier1 * signal1
+s1 = carrier * (1 + signal/Ac)
 plt.figure(figsize=(12, 4))
 plt.plot(n, s1)
 plt.title('Sinal Modulado')

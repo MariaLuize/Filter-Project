@@ -27,7 +27,7 @@ plt.show()
 
 # Modulação Sinal original com portadora
 s = carrier * (1 + signal/Ac)
-plt.figure(figsize=(12, 4))
+plt.figure(figsize=(20, 5))
 plt.plot(n, s)
 plt.title('Sinal Modulado')
 plt.xlabel('Tempo(s)')
