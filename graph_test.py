@@ -10,7 +10,7 @@ print ("Taxa de amostragem Sinal 1: ", sr)
 print ("Numero de amostras Sinal 1: ", sig.shape)
 
 Fs = 16000
-n = np.arange(0, 8, 1/Fs).
+n = np.arange(0, 8, 1/Fs)
 
 # Plotar sinal de audio 1
 plt.rcParams['font.family'] = ['DejaVu Sans']
