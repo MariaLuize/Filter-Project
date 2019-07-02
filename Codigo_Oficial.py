@@ -29,7 +29,7 @@ signal2 = np.frombuffer(spf2.readframes(sz), dtype=np.int16)  # Carregar sinal 2
 # Criação do Sinal Portadora de Transmissão
 Fc = 6  # Frequência da Portadora
 Ac = 1  # Amplitude da Portadora
-phc = np.pi/2
+phc = np.pi/2  # Fase da Portadora
 carrier = Ac*np.cos(2*np.pi*Fc*n + phc)
 plt.figure(figsize=(12, 4))
 plt.title('Sinal Portadora')
@@ -40,7 +40,8 @@ plt.show()
 # # Criação do sinal Modulante (Somente para testes)
 # Fm = 0.5  # Frequência do Modulante
 # Am = 1  # Amplitude do Modulante
-# m = Am*np.cos(2*np.pi*Fm*n + np.pi/2)
+# phm = np.pi/2  # Fase da Modulante
+# m = Am*np.cos(2*np.pi*Fm*n + phm)
 
 # sinal de Audio 1
 samps = 8 * 16000
@@ -50,6 +51,11 @@ plt.figure(figsize=(12, 4))
 plt.title('Sinal Modulante 1')
 plt.plot(n, signal1)
 plt.show()
+
+# Downsampling do Sinal 1
+M = 2  # Fator de dizimação
+signal1 = signal.decimate(signal1, M)  # Dizimação de parte do Sinal
+
 
 # Modulação Sinal de Audio 1 com Portadora(Carrier)
 s = carrier * (1 + signal1/Ac)
@@ -89,13 +95,17 @@ Spectres.generate_spectres(path=caminho, signal=h, Fs=Fs, stypeName='Demodulado_
 # plt.title('Sinal Filtrado 1')
 # plt.show()
 
-#   DownSampling
+#   Sinal de Audio 2
 samps = SimTime * 16000
 signal2 = signal.resample(signal2, samps)
 plt.figure(figsize=(12, 4))
 plt.plot(n, signal2)
 plt.title('Sinal Modulante 2')
 plt.show()
+
+# Downsampling do Sinal 1
+M = 2  # Fator de dizimação
+signal2 = signal.decimate(signal2, M)  # Dizimação de parte do Sinal
 
 # Modulação Sinal de Audio 2 com Portadora(Carrier)
 s = carrier * (1 + signal2/Ac)
