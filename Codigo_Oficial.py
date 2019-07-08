@@ -51,23 +51,23 @@ signal2 = sgn.decimate(signal2, M)  # Dizimação de parte do Sinal
 
 # Ajuste no Número de Amostras
 Fs = 8000
-n = np.arange(0, SimTime, 1/Fs)  # Array de Amostras Após o Downsampling
+n2 = np.arange(0, SimTime, 1/Fs)  # Array de Amostras Após o Downsampling
 
 # Criação do Sinal Portadora de Transmissão
 Fcarrier = 6  # Frequência da Portadora
 Acarrier = 1  # Amplitude da Portadora
 Phcarrier = np.pi/2  # Fase da Portadora
-carrier = Acarrier*np.cos(2*np.pi*Fcarrier*n + Phcarrier)  # Senóide
+carrier = Acarrier*np.cos(2*np.pi*Fcarrier*n2 + Phcarrier)  # Senóide
 plt.figure(figsize=(12, 4))
 plt.title('Sinal Portadora')
-plt.plot(n, carrier)
+plt.plot(n2, carrier)
 plt.grid()
 plt.show()
 
 # Modulação Sinal de Audio 1 com Portadora(Carrier)
 s1 = carrier * (1 + signal1/Acarrier)
 plt.figure(figsize=(12, 4))
-plt.plot(n, s1)
+plt.plot(n2, s1)
 plt.title('Sinal Modulado 1')
 plt.xlabel('Tempo(s)')
 plt.ylabel('Amplitude')
@@ -80,7 +80,7 @@ Spectres.generate_spectres(path=caminho, signal=s1, Fs=Fs, stypeName='Modulado_S
 # Modulação Sinal de Audio 2 com Portadora(Carrier)
 s2 = carrier * (1 + signal2/Acarrier)
 plt.figure(figsize=(12, 4))
-plt.plot(n, s2)
+plt.plot(n2, s2)
 plt.title('Sinal Modulado 2')
 plt.xlabel('Tempo(s)')
 plt.ylabel('Amplitude')
@@ -93,7 +93,7 @@ Spectres.generate_spectres(path=caminho, signal=s2, Fs=Fs, stypeName='Modulado_S
 # Somatório dos Sinais Modulados
 sinal_somado = s1 + s2
 plt.figure(figsize=(12, 4))
-plt.plot(n, sinal_somado)
+plt.plot(n2, sinal_somado)
 plt.title('Sinal Somado')
 plt.xlabel('Tempo(s)')
 plt.ylabel('Amplitude')
@@ -101,9 +101,9 @@ plt.grid()
 plt.show()
 
 # Demodulação do sinal
-h = sinal_somado * np.cos(2*np.pi*Fcarrier*n + Phcarrier)
+h = sinal_somado * np.cos(2*np.pi*Fcarrier*n2 + Phcarrier)
 plt.figure(figsize=(12, 4))
-plt.plot(n, h)
+plt.plot(n2, h)
 plt.title('Sinal Demodulado')
 plt.xlabel('Tempo(s)')
 plt.ylabel('Amplitude')
@@ -132,7 +132,7 @@ plt.figure(figsize=(12, 4))
 plt.title('Sinal Filtrado')
 plt.xlabel('Tempo(s)')
 plt.ylabel('Amplitude')
-plt.plot(n, y)
+plt.plot(n2, y)
 plt.show()
 
 # Upsampling do Sinal (Filtro Passa-baixa e fator de expansão)
