@@ -40,44 +40,9 @@ plt.title('Sinal Modulante 2')
 plt.plot(n, signal2)
 plt.show()
 
-
-# ################################# Resolver aqui #######################
 # Downsampling do Sinal 1
 M = 2  # Fator de dizimação
-gpass = 0.001  # Ripple na banda de passagem
-gstop = 60  # Atenuação na banda de rejeição
-fp = np.pi/M  # Frequência de corte
-fs = 3000  # Frequência de rejeição
-fn = F_Amostragem/(2*M)  # Frequência de Nyquist
-Wp = 0.4  # Frequência das bandas de passagem
-Ws = 0.5  # Frequência das bandas de rejeição
-
-a = abs(np.fft.fftshift(np.fft.fft(signal1)))
-#a = a[int(len(a)/2):len(a)-1]
-freqs = np.fft.fftfreq(len(a))
-n, Wc = sgn.buttord(Wp, Ws, gpass, gstop)
-B, A = sgn.butter(n, Wc, btype='lowpass', fs=F_Amostragem)
-filtered_signal = sgn.lfilter(B, A, signal1, axis=0)
-w, h = sgn.freqz(B, A)
-print(Wp)
-print(Ws)
-print(Wc)
-
-fig, ax1 = plt.subplots()
-#plt.plot(freqs, a,  color='green')
-ax1.set_title('Digital filter frequency response')
-ax1.set_ylabel('Amplitude [dB]', color='b')
-ax1.set_xlabel('Frequency [rad/sample]')
-ax1.plot(w, 20 * np.log10(abs(h)), 'b')
-ax2 = ax1.twinx()
-#angles = np.unwrap(np.angle(h))
-ax2.plot(freqs, a, 'g')
-ax2.set_ylabel('', color='g')
-fig.show()
-
-signal1 = sgn.decimate(filtered_signal, M)  # Dizimação de parte do Sinal
-
-########################### Até aqui ##################################
+signal1 = sgn.decimate(signal1, M)  # Dizimação de parte do Sinal
 
 # Downsampling do Sinal 2
 M = 2  # Fator de dizimação
@@ -149,20 +114,20 @@ plt.show()
 Spectres.generate_spectres(path=caminho, signal=h, Fs=Fs, stypeName='Demodulado_Sinal')
 
 # Filtro Passa-Faixa
-gpass= 3 # Ripple na banda de passagem
-gstop= 40 # Atenuação na banda de rejeição
-fp1=4000 # Frequências de corte
-fp2=7000
-fs1=1500 # Frequências de rejeição
-fs2=9500
-fn = Fs/2 # Frequência de Nyquist
-Wp1=fp1/fn # Frequências normalizada
-Wp2=fp2/fn
-Ws1=fs1/fn
-Ws2=fs2/fn
-order,Wc = sgn.buttord([0.2, 0.6], [0.3, 0.4], gpass, gstop) # Retorna ordem e frequência de corte
-b,a = sgn.butter(order, Wc, 'bandpass')
-y = sgn.filtfilt(b,a,h)
+gpass= 3  # Ripple na banda de passagem
+gstop= 40  # Atenuação na banda de rejeição
+fp1 = 4000  # Frequências de corte
+fp2 = 7000
+fs1 = 1500  # Frequências de rejeição
+fs2 = 9500
+fn = Fs/2  # Frequência de Nyquist
+Wp1 = fp1/fn  # Frequências normalizada
+Wp2 = fp2/fn
+Ws1 =fs1/fn
+Ws2 = fs2/fn
+order, Wc = sgn.buttord([0.2, 0.6], [0.3, 0.4], gpass, gstop) # Retorna ordem e frequência de corte
+b, a = sgn.butter(order, Wc, 'bandpass')
+y = sgn.filtfilt(b, a, h)
 plt.figure(figsize=(12, 4))
 plt.title('Sinal Filtrado')
 plt.xlabel('Tempo(s)')
@@ -171,6 +136,11 @@ plt.plot(n, y)
 plt.show()
 
 # Upsampling do Sinal (Filtro Passa-baixa e fator de expansão)
-L = 2 # Fator de Expansão
-x = sgn.upfirdn([1], y, L) # Expansão
-x = sgn.resample(h, 128000)
+L = 2  # Fator expansão
+x = sgn.upfirdn([1], y, L)
+plt.figure(figsize=(12, 4))
+plt.plot(n, x)
+plt.title('Sinal depois da Expansão')
+plt.xlabel('Tempo(s)')
+plt.ylabel('Amplitude')
+plt.show()
