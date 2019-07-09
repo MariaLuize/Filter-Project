@@ -6,8 +6,8 @@ from scipy import signal as sgn
 
 # Setar diretório e arquivo
 caminho = 'C:\\Users\\jeanm\\Documents\\Filter-Project\\Data\\'
-arquivo_audio1 = "mountain_king_16kHz"
-arquivo_audio2 = "queen_of_the_night_16kHz"
+arquivo_audio1 = "High-pitch-sound"
+arquivo_audio2 = "Low-frequency-sound-60-hz"
 spf1 = wave.open(caminho + arquivo_audio1 + '.wav', 'rb')
 spf2 = wave.open(caminho + arquivo_audio2 + '.wav', 'rb')
 
@@ -114,33 +114,54 @@ plt.show()
 Spectres.generate_spectres(path=caminho, signal=h, Fs=Fs, stypeName='Demodulado_Sinal')
 
 # Filtro Passa-Faixa
-gpass= 3  # Ripple na banda de passagem
-gstop= 40  # Atenuação na banda de rejeição
-fp1 = 4000  # Frequências de corte
-fp2 = 7000
-fs1 = 1500  # Frequências de rejeição
-fs2 = 9500
-fn = Fs/2  # Frequência de Nyquist
-Wp1 = fp1/fn  # Frequências normalizada
-Wp2 = fp2/fn
-Ws1 =fs1/fn
-Ws2 = fs2/fn
-order, Wc = sgn.buttord([0.2, 0.6], [0.3, 0.4], gpass, gstop) # Retorna ordem e frequência de corte
-b, a = sgn.butter(order, Wc, 'bandpass')
-y = sgn.filtfilt(b, a, h)
+gpass= 3 # Ripple na banda de passagem
+gstop= 80 # Atenuação na banda de rejeição
+fp1= 13000# Frequências de corte
+fp2=2000
+fs1=1000 # Frequências de rejeição
+fs2=0
+fn = Fs/2 # Frequência de Nyquist
+Wp1=fp1/fn # Frequências normalizada
+Wp2=fp2/fn
+Ws1=fs1/fn
+Ws2=fs2/fn
+
+a = abs(np.fft.fftshift(np.fft.fft(h)))
+a = a[int(len(a)/2):len(a)-1]
+freqs = np.fft.fftfreq(len(a))
+order, Wc = sgn.buttord([Wp1, Wp2], [Ws1, Ws2], gpass, gstop)
+B, A = sgn.butter(order, Wc, btype='bandpass', fs=Fs)
+filtered_signal = sgn.lfilter(B, A, h1, axis=0)
+w, h = sgn.freqz(B, A)
+print(Wp1)
+print(Wp2)
+print(Ws1)
+print(Ws2)
+print(Wc)
+
+fig, ax1 = plt.subplots()
+#plt.plot(freqs, a,  color='green')
+ax1.set_title('Digital filter frequency response')
+ax1.set_ylabel('Amplitude [dB]', color='b')
+ax1.set_xlabel('Frequency [rad/sample]')
+ax1.plot(w, 20 * np.log10(abs(h)), 'b')
+ax2 = ax1.twinx()
+#angles = np.unwrap(np.angle(h))
+ax2.plot(freqs, a, 'g')
+ax2.set_ylabel('', color='g')
+
 plt.figure(figsize=(12, 4))
-plt.title('Sinal Filtrado')
+plt.plot(n2, filtered_signal)
+plt.title('Sinal')
 plt.xlabel('Tempo(s)')
 plt.ylabel('Amplitude')
-plt.plot(n2, y)
-plt.show()
 
-# Upsampling do Sinal (Filtro Passa-baixa e fator de expansão)
-L = 2  # Fator expansão
-x = sgn.upfirdn([1], y, L)
+
+# Upsampling do Sinal
+L = 2
+x = sgn.upfirdn([1], filtered_signal, L)
 plt.figure(figsize=(12, 4))
 plt.plot(n, x)
-plt.title('Sinal depois da Expansão')
+plt.title('Sinal')
 plt.xlabel('Tempo(s)')
 plt.ylabel('Amplitude')
-plt.show()
