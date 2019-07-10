@@ -7,7 +7,7 @@ from scipy import signal as sgn
 # Setar diretório e arquivo
 caminho = 'C:\\Users\\jeanm\\Documents\\Filter-Project\\Data\\'
 arquivo_audio1 = "High-pitch-sound"
-arquivo_audio2 = "Low-frequency-sound-60-hz"
+arquivo_audio2 = "queen_of_the_night_16kHz"
 spf1 = wave.open(caminho + arquivo_audio1 + '.wav', 'rb')
 spf2 = wave.open(caminho + arquivo_audio2 + '.wav', 'rb')
 
@@ -65,7 +65,7 @@ plt.grid()
 plt.show()
 
 # Modulação Sinal de Audio 1 com Portadora(Carrier)
-s1 = carrier * (1 + signal1/Acarrier)
+s1 = carrier * signal1
 plt.figure(figsize=(12, 4))
 plt.plot(n2, s1)
 plt.title('Sinal Modulado 1')
@@ -78,7 +78,7 @@ plt.show()
 Spectres.generate_spectres(path=caminho, signal=s1, Fs=Fs, stypeName='Modulado_Sinal_1')
 
 # Modulação Sinal de Audio 2 com Portadora(Carrier)
-s2 = carrier * (1 + signal2/Acarrier)
+s2 = carrier * signal2
 plt.figure(figsize=(12, 4))
 plt.plot(n2, s2)
 plt.title('Sinal Modulado 2')
@@ -117,7 +117,7 @@ fs1=9000 # Frequências de rejeição
 fp1= 11000# Frequências de corte
 fp2=13000
 fs2=14000
-fn = Fs2/2 # Frequência de Nyquist
+fn = Fs/2 # Frequência de Nyquist
 Wp1=fp1/fn  # Frequências normalizada
 Wp2=fp2/fn
 Ws1=fs1/fn
@@ -160,7 +160,7 @@ plt.title('Sinal Filtrado')
 plt.xlabel('Tempo(s)')
 plt.ylabel('Amplitude')
 plt.plot(n2, filtered_signal)
-
+plt.show()
 
 # Upsampling do Sinal
 L = 2
@@ -170,3 +170,11 @@ plt.plot(n, x)
 plt.title('Sinal')
 plt.xlabel('Tempo(s)')
 plt.ylabel('Amplitude')
+plt.show()
+
+obj = wave.open(caminho + arquivo_audio2 + '_saida.wav', 'w')
+obj.setnchannels(1) # mono
+obj.setsampwidth(1)
+obj.setframerate(Fs)
+obj.writeframesraw(filtered_signal)
+obj.close()
