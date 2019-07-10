@@ -3,11 +3,14 @@ import numpy as np
 import wave
 from spectres import Spectres
 from scipy import signal as sgn
+import librosa
+from sklearn import metrics
+
 
 # Setar diretório e arquivo
 caminho = 'C:\\Users\\jeanm\\Documents\\Filter-Project\\Data\\'
 arquivo_audio1 = "High-pitch-sound"
-arquivo_audio2 = "queen_of_the_night_16kHz"
+arquivo_audio2 = "mountain_king_16kHz"
 spf1 = wave.open(caminho + arquivo_audio1 + '.wav', 'rb')
 spf2 = wave.open(caminho + arquivo_audio2 + '.wav', 'rb')
 
@@ -27,6 +30,8 @@ sz = F_Amostragem * SimTime  # Taxa do Projeto (Hz) (Para os sinais de audio ter
 
 signal1 = np.frombuffer(spf1.readframes(sz), dtype=np.int16)  # Carregar sinal 1
 signal2 = np.frombuffer(spf2.readframes(sz), dtype=np.int16)  # Carregar sinal 2
+signal2_orig =signal2
+signal1_orig = signal1
 
 # sinal de Audio 1
 plt.figure(figsize=(12, 4))
@@ -172,9 +177,21 @@ plt.xlabel('Tempo(s)')
 plt.ylabel('Amplitude')
 plt.show()
 
-obj = wave.open(caminho + arquivo_audio2 + '_saida.wav', 'w')
-obj.setnchannels(1) # mono
-obj.setsampwidth(1)
-obj.setframerate(Fs)
-obj.writeframesraw(filtered_signal)
-obj.close()
+# Salvar Audio
+librosa.output.write_wav(caminho + arquivo_audio2 + '_saida.wav', filtered_signal, Fs)
+
+
+# Erro Medio Quadratico(MSE)
+erro = metrics.mean_squared_error(x, signal2_orig)
+print('Erro Medio Quadratico(MSE): ', erro)
+
+
+#Calculo de SNR
+avgPower1 = 0
+avgPower2 = 0
+for i in signal2_orig:
+    avgPower1 += i ** 2
+for i in x:
+    avgPower2 += i ** 2
+
+print('SNR: ', 10 * np.log10(avgPower1 / len(signal2_orig) / (avgPower2 / len(x))))
