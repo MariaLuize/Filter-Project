@@ -110,18 +110,15 @@ plt.ylabel('Amplitude')
 plt.grid()
 plt.show()
 
-# Espectros do sinal Demodulado
-Spectres.generate_spectres(path=caminho, signal=h, Fs=Fs, stypeName='Demodulado_Sinal')
-
-# Filtro Passa-Faixa
+## Filtro Passa-Faixa
 gpass= 3 # Ripple na banda de passagem
-gstop= 80 # Atenuação na banda de rejeição
-fp1= 13000# Frequências de corte
-fp2=2000
-fs1=1000 # Frequências de rejeição
-fs2=0
-fn = Fs/2 # Frequência de Nyquist
-Wp1=fp1/fn # Frequências normalizada
+gstop= 82 # Atenuação na banda de rejeição
+fs1=9000 # Frequências de rejeição
+fp1= 11000# Frequências de corte
+fp2=13000
+fs2=14000
+fn = Fs2/2 # Frequência de Nyquist
+Wp1=fp1/fn  # Frequências normalizada
 Wp2=fp2/fn
 Ws1=fs1/fn
 Ws2=fs2/fn
@@ -129,32 +126,40 @@ Ws2=fs2/fn
 a = abs(np.fft.fftshift(np.fft.fft(h)))
 a = a[int(len(a)/2):len(a)-1]
 freqs = np.fft.fftfreq(len(a))
-order, Wc = sgn.buttord([Wp1, Wp2], [Ws1, Ws2], gpass, gstop)
-B, A = sgn.butter(order, Wc, btype='bandpass', fs=Fs)
-filtered_signal = sgn.lfilter(B, A, h1, axis=0)
+#order, Wc = sgn.buttord([Wp1, Wp2], [Ws1, Ws2], gpass, gstop)
+#B, A = sgn.butter(order, Wc, btype='bandpass', fs=Fs2)
+B,A = sgn.iirdesign(wp = [0.2, 0.4], ws= [0.03, 0.6], gstop= gstop, gpass=gpass, ftype='butter')
+filtered_signal = sgn.lfilter(B, A, h, axis=0)
 w, h = sgn.freqz(B, A)
 print(Wp1)
 print(Wp2)
 print(Ws1)
 print(Ws2)
-print(Wc)
+#print(Wc)
+#print(order/2)
 
-fig, ax1 = plt.subplots()
-#plt.plot(freqs, a,  color='green')
+fig = plt.figure(figsize=(18,5))
+ax1 = fig.add_subplot(1, 1, 1)
+ax2 = ax1.twinx()
+t = np.linspace(0., 10., 100)
+ax1.plot(w, 20 * np.log10(abs(h)), 'b')
+ax2.plot(freqs, a, 'g')
+
 ax1.set_title('Digital filter frequency response')
 ax1.set_ylabel('Amplitude [dB]', color='b')
 ax1.set_xlabel('Frequency [rad/sample]')
-ax1.plot(w, 20 * np.log10(abs(h)), 'b')
-ax2 = ax1.twinx()
+
+#plt.plot(freqs, a,  color='green')
+
 #angles = np.unwrap(np.angle(h))
-ax2.plot(freqs, a, 'g')
-ax2.set_ylabel('', color='g')
+
+#ax2.set_ylabel('', color='g')
 
 plt.figure(figsize=(12, 4))
-plt.plot(n2, filtered_signal)
-plt.title('Sinal')
+plt.title('Sinal Filtrado')
 plt.xlabel('Tempo(s)')
 plt.ylabel('Amplitude')
+plt.plot(n2, filtered_signal)
 
 
 # Upsampling do Sinal
