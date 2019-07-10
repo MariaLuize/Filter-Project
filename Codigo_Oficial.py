@@ -8,9 +8,9 @@ from sklearn import metrics
 
 
 # Setar diretório e arquivo
-caminho = 'C:\\Users\\jeanm\\Documents\\Filter-Project\\Data\\'
+caminho = 'C:/Users/Maria Luize/Downloads/blocos engcomp/Git_Projects/Filter-Project/Data/'
 arquivo_audio1 = "High-pitch-sound"
-arquivo_audio2 = "mountain_king_16kHz"
+arquivo_audio2 = "queen_of_the_night_16kHz"
 spf1 = wave.open(caminho + arquivo_audio1 + '.wav', 'rb')
 spf2 = wave.open(caminho + arquivo_audio2 + '.wav', 'rb')
 
@@ -105,36 +105,28 @@ plt.ylabel('Amplitude')
 plt.grid()
 plt.show()
 
-# Demodulação do sinal
-h = sinal_somado * np.cos(2*np.pi*Fcarrier*n2 + Phcarrier)
-plt.figure(figsize=(12, 4))
-plt.plot(n2, h)
-plt.title('Sinal Demodulado')
-plt.xlabel('Tempo(s)')
-plt.ylabel('Amplitude')
-plt.grid()
-plt.show()
 
-## Filtro Passa-Faixa
+
+# Filtro Passa-Faixa
 gpass= 3 # Ripple na banda de passagem
-gstop= 82 # Atenuação na banda de rejeição
+gstop= 40 # Atenuação na banda de rejeição
 fs1=9000 # Frequências de rejeição
 fp1= 11000# Frequências de corte
 fp2=13000
 fs2=14000
 fn = Fs/2 # Frequência de Nyquist
 Wp1=fp1/fn  # Frequências normalizada
-Wp2=fp2/fn
-Ws1=fs1/fn
-Ws2=fs2/fn
+Wp2=fp2/fn  
+Ws1=fs1/fn 
+Ws2=fs2/fn 
 
-a = abs(np.fft.fftshift(np.fft.fft(h)))
-a = a[int(len(a)/2):len(a)-1]
+a = abs(np.fft.fftshift(np.fft.fft(sinal_somado)))
+#a = a[int(len(a)/2):len(a)-1]
 freqs = np.fft.fftfreq(len(a))
 #order, Wc = sgn.buttord([Wp1, Wp2], [Ws1, Ws2], gpass, gstop)
 #B, A = sgn.butter(order, Wc, btype='bandpass', fs=Fs2)
-B,A = sgn.iirdesign(wp = [0.2, 0.4], ws= [0.03, 0.6], gstop= gstop, gpass=gpass, ftype='butter')
-filtered_signal = sgn.lfilter(B, A, h, axis=0)
+B,A = sgn.iirdesign(wp = [0.2, 0.4], ws= [0.1, 0.7], gstop= gstop, gpass=gpass, ftype='butter')
+filtered_signal = sgn.lfilter(B, A, sinal_somado, axis=0)
 w, h = sgn.freqz(B, A)
 print(Wp1)
 print(Wp2)
@@ -153,6 +145,7 @@ ax2.plot(freqs, a, 'g')
 ax1.set_title('Digital filter frequency response')
 ax1.set_ylabel('Amplitude [dB]', color='b')
 ax1.set_xlabel('Frequency [rad/sample]')
+plt.show()
 
 #plt.plot(freqs, a,  color='green')
 
@@ -160,25 +153,46 @@ ax1.set_xlabel('Frequency [rad/sample]')
 
 #ax2.set_ylabel('', color='g')
 
+#plt.figure(figsize=(12, 4))
+#plt.title('Sinal Filtrado')
+#plt.xlabel('Tempo(s)')
+#plt.ylabel('Amplitude')
+#plt.plot(n2, y)
+
+# Demodulação do sinal Somado
+h1 = filtered_signal * np.cos(2*np.pi*Fcarrier*n2 + np.pi/2)
 plt.figure(figsize=(12, 4))
-plt.title('Sinal Filtrado')
+plt.plot(n2, h1)
+plt.title('Sinal Demodulado')
 plt.xlabel('Tempo(s)')
 plt.ylabel('Amplitude')
-plt.plot(n2, filtered_signal)
+plt.grid()
+
+#  Espectros Sinal Demodulado
+spectrum = np.fft.fft(h1)
+freqs = np.fft.fftfreq(len(spectrum))
+magnitude = np.abs(spectrum)    # Amplitude do Sinal
+plt.figure(figsize=(12, 4))
+plt.plot(freqs, magnitude)
+plt.title('Espectros do Sinal Modulado')
+plt.ylabel("Magnitude")
+plt.xlabel('Frequência (Hz)')
 plt.show()
 
+
 # Upsampling do Sinal
-L = 2
-x = sgn.upfirdn([1], filtered_signal, L)
+L = 2 
+x = sgn.upfirdn([1], h1, L)
+#x = sgn.resample(x, 128000)
+print(x)
 plt.figure(figsize=(12, 4))
 plt.plot(n, x)
 plt.title('Sinal')
 plt.xlabel('Tempo(s)')
 plt.ylabel('Amplitude')
 plt.show()
-
 # Salvar Audio
-librosa.output.write_wav(caminho + arquivo_audio2 + '_saida.wav', filtered_signal, Fs)
+librosa.output.write_wav(caminho + arquivo_audio2 + '_saida.wav', x, Fs)
 
 
 # Erro Medio Quadratico(MSE)
