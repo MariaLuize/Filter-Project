@@ -12,10 +12,9 @@ from scipy.signal import freqs, iirfilter
 caminho = 'C:/Users/Maria Luize/Downloads/blocos engcomp/Git_Projects/Filter-Project/Data/'
 arquivo_audio1 = "queen_of_the_night_16kHz"
 arquivo_audio2 = "mountain_king_16kHz"
-# carriervoz2 = "High-pitch-sound"
+
 spf1 = wave.open(caminho + arquivo_audio1 + '.wav', 'rb')
 spf2 = wave.open(caminho + arquivo_audio2 + '.wav', 'rb')
-# spf3 = wave.open(caminho + carriervoz2 + '.wav', 'rb')
 
 # Caso Stereo
 if spf1.getnchannels() == 2:
@@ -35,8 +34,6 @@ sz = F_Amostragem * SimTime  # Taxa do Projeto (Hz) (Para os sinais de audio ter
 
 signal1 = np.frombuffer(spf1.readframes(sz), dtype=np.int16)  # Carregar sinal 1
 signal2 = np.frombuffer(spf2.readframes(sz), dtype=np.int16)  # Carregar sinal 2
-# signal3 = np.frombuffer(spf3.readframes(sz), dtype=np.int16)  # Carregar sinal 3
-# signal3_orig =signal3
 signal2_orig =signal2
 signal1_orig = signal1
 
@@ -52,16 +49,10 @@ plt.title('Sinal Modulante 2')
 plt.plot(n, signal2)
 plt.show()
 
-# # sinal de Audio 3(Carrier para voz2)
-# plt.figure(figsize=(12, 4))
-# plt.title('Sinal Portadora voz2')
-# plt.plot(n, signal3)
-# plt.show()
-
 # Downsampling do Sinal 1
 M = 2  # Fator de dizimação
 signal1 = sgn.decimate(signal1, M)  # Dizimação de parte do Sinal
-librosa.output.write_wav(caminho + arquivo_audio1 + '_downsampling1.wav', signal1, F_Amostragem)
+# librosa.output.write_wav(caminho + arquivo_audio1 + '_downsampling1.wav', signal1, F_Amostragem)
 
 # Downsampling do Sinal 2
 M = 2  # Fator de dizimação
@@ -73,8 +64,8 @@ Fs = 8000
 n2 = np.arange(0, SimTime, 1/Fs)  # Array de Amostras Após o Downsampling
 
 # Criação do Sinal Portadora de Transmissão1
-Fcarrier = 3  # Frequência da Portadora
-Acarrier = 1  # Amplitude da Portadora
+Fcarrier = 4  # Frequência da Portadora
+Acarrier = 0.7  # Amplitude da Portadora
 Phcarrier = np.pi/2  # Fase da Portadora
 carrier = Acarrier*np.cos(2*np.pi*Fcarrier*n2 + Phcarrier)  # Senóide
 plt.figure(figsize=(12, 4))
@@ -85,7 +76,7 @@ plt.show()
 
 
 # Criação do Sinal Portadora de Transmissão2
-Fcarrier2 = 1  # Frequência da Portadora2
+Fcarrier2 = 2  # Frequência da Portadora2
 Acarrier2 = 1  # Amplitude da Portadora2
 Phcarrier2 = np.pi/2  # Fase da Portadora2
 carrier2 = Acarrier2*np.cos(2*np.pi*Fcarrier2*n2 + Phcarrier2)
@@ -110,7 +101,7 @@ plt.show()
 Spectres.generate_spectres(path=caminho, signal=s1, Fs=Fs, stypeName='Modulado_Sinal_1')
 
 # Salvar sinal Modulado 1
-librosa.output.write_wav(caminho + arquivo_audio1 + '_modulado1.wav', s1, Fs)
+# librosa.output.write_wav(caminho + arquivo_audio1 + '_modulado1.wav', s1, Fs)
 
 
 # Modulação Sinal de Audio 2 com Portadora2(Carrier2)
@@ -127,7 +118,7 @@ plt.show()
 Spectres.generate_spectres(path=caminho, signal=s2, Fs=Fs, stypeName='Modulado_Sinal_2')
 
 # Salvar sinal Modulado 1
-librosa.output.write_wav(caminho + arquivo_audio2 + '_modulado2.wav', s2, Fs)
+# librosa.output.write_wav(caminho + arquivo_audio2 + '_modulado2.wav', s2, Fs)
 
 # Somatório dos Sinais Modulados
 sinal_somado = s1 + s2
@@ -142,7 +133,7 @@ plt.show()
 
 
 # Filtro Passa-Faixa, obter sinal1
-gpass= 3 # Ripple na banda de passagem
+gpass= 2 # Ripple na banda de passagem
 gstop= 40 # Atenuação na banda de rejeição
 fs1=9000 # Frequências de rejeição
 fp1= 11000# Frequências de corte
@@ -159,7 +150,7 @@ a = abs(np.fft.fftshift(np.fft.fft(sinal_somado)))
 freqs = np.fft.fftfreq(len(a))
 #order, Wc = sgn.buttord([Wp1, Wp2], [Ws1, Ws2], gpass, gstop)
 #B, A = sgn.butter(order, Wc, btype='bandpass', fs=Fs2)
-B,A = sgn.iirdesign(wp = [0.2, 0.4], ws= [0.1, 0.7], gstop= gstop, gpass=gpass, ftype='butter')
+B,A = sgn.iirdesign(wp = [0.15, 0.4], ws= [0.05, 0.55], gstop= gstop, gpass=gpass, ftype='butter')
 filtered_signal = sgn.lfilter(B, A, sinal_somado, axis=0)
 w, h = sgn.freqz(B, A)
 print(Wp1)
@@ -226,7 +217,7 @@ plt.xlabel('Tempo(s)')
 plt.ylabel('Amplitude')
 plt.show()
 # Salvar Audio
-librosa.output.write_wav(caminho + arquivo_audio1 + '_saida.wav', x, Fs)
+librosa.output.write_wav(caminho + arquivo_audio1 + '_saida.wav', x, F_Amostragem)
 
 
 # Erro Medio Quadratico(MSE)
