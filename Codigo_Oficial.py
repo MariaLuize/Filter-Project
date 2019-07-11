@@ -10,19 +10,19 @@ from sklearn import metrics
 # Setar diretório e arquivo
 caminho = 'C:/Users/Maria Luize/Downloads/blocos engcomp/Git_Projects/Filter-Project/Data/'
 arquivo_audio1 = "queen_of_the_night_16kHz"
-arquivo_audio2 = "Saida_Voz02_16KHz"
-carriervoz2 = "High-pitch-sound"
+arquivo_audio2 = "mountain_king_16kHz"
+# carriervoz2 = "High-pitch-sound"
 spf1 = wave.open(caminho + arquivo_audio1 + '.wav', 'rb')
 spf2 = wave.open(caminho + arquivo_audio2 + '.wav', 'rb')
-spf3 = wave.open(caminho + carriervoz2 + '.wav', 'rb')
+# spf3 = wave.open(caminho + carriervoz2 + '.wav', 'rb')
 
 # Caso Stereo
 if spf1.getnchannels() == 2:
     spf1 = spf1.mean(axis=1)
 elif spf2.getnchannels() == 2:
     spf2 = spf2.mean(axis=1)
-elif spf3.getnchannels() == 2:
-    spf3 = spf3.mean(axis=1)
+# elif spf3.getnchannels() == 2:
+#     spf3 = spf3.mean(axis=1)
 
 # Parâmetros Gerais da Simulação
 F_Amostragem = 16000  # Frequência de Amostragem Inicial dos Audios
@@ -34,8 +34,8 @@ sz = F_Amostragem * SimTime  # Taxa do Projeto (Hz) (Para os sinais de audio ter
 
 signal1 = np.frombuffer(spf1.readframes(sz), dtype=np.int16)  # Carregar sinal 1
 signal2 = np.frombuffer(spf2.readframes(sz), dtype=np.int16)  # Carregar sinal 2
-signal3 = np.frombuffer(spf3.readframes(sz), dtype=np.int16)  # Carregar sinal 3
-signal3_orig =signal3
+# signal3 = np.frombuffer(spf3.readframes(sz), dtype=np.int16)  # Carregar sinal 3
+# signal3_orig =signal3
 signal2_orig =signal2
 signal1_orig = signal1
 
@@ -51,11 +51,11 @@ plt.title('Sinal Modulante 2')
 plt.plot(n, signal2)
 plt.show()
 
-# sinal de Audio 3(Carrier para voz2)
-plt.figure(figsize=(12, 4))
-plt.title('Sinal Portadora voz2')
-plt.plot(n, signal3)
-plt.show()
+# # sinal de Audio 3(Carrier para voz2)
+# plt.figure(figsize=(12, 4))
+# plt.title('Sinal Portadora voz2')
+# plt.plot(n, signal3)
+# plt.show()
 
 # Downsampling do Sinal 1
 M = 2  # Fator de dizimação
@@ -76,10 +76,23 @@ Acarrier = 1  # Amplitude da Portadora
 Phcarrier = np.pi/2  # Fase da Portadora
 carrier = Acarrier*np.cos(2*np.pi*Fcarrier*n2 + Phcarrier)  # Senóide
 plt.figure(figsize=(12, 4))
-plt.title('Sinal Portadora')
+plt.title('Sinal Portadora1')
 plt.plot(n2, carrier)
 plt.grid()
 plt.show()
+
+
+# Criação do Sinal Portadora de Transmissão2
+Fcarrier2 = 12  # Frequência da Portadora2
+Acarrier2 = 3  # Amplitude da Portadora2
+Phcarrier2 = np.pi/2  # Fase da Portadora2
+carrier2 = Acarrier2*np.cos(2*np.pi*Fcarrier2*n2 + Phcarrier2)
+plt.figure(figsize=(12, 4))
+plt.title('Sinal Portadora2')
+plt.plot(n2, carrier2)
+plt.grid()
+plt.show()
+
 
 # Modulação Sinal de Audio 1 com Portadora(Carrier)
 s1 = carrier * signal1
@@ -94,8 +107,8 @@ plt.show()
 # Espectros do sinal Modulado 1
 Spectres.generate_spectres(path=caminho, signal=s1, Fs=Fs, stypeName='Modulado_Sinal_1')
 
-# Modulação Sinal de Audio 2 com Portadora(Carrier)
-s2 = carrier * signal2
+# Modulação Sinal de Audio 2 com Portadora2(Carrier2)
+s2 = carrier2 * signal2
 plt.figure(figsize=(12, 4))
 plt.plot(n2, s2)
 plt.title('Sinal Modulado 2')
