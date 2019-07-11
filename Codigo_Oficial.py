@@ -5,6 +5,7 @@ from spectres import Spectres
 from scipy import signal as sgn
 import librosa
 from sklearn import metrics
+from scipy.signal import freqs, iirfilter
 
 
 # Setar diretório e arquivo
@@ -60,6 +61,7 @@ plt.show()
 # Downsampling do Sinal 1
 M = 2  # Fator de dizimação
 signal1 = sgn.decimate(signal1, M)  # Dizimação de parte do Sinal
+librosa.output.write_wav(caminho + arquivo_audio1 + '_downsampling1.wav', signal1, F_Amostragem)
 
 # Downsampling do Sinal 2
 M = 2  # Fator de dizimação
@@ -71,8 +73,8 @@ Fs = 8000
 n2 = np.arange(0, SimTime, 1/Fs)  # Array de Amostras Após o Downsampling
 
 # Criação do Sinal Portadora de Transmissão1
-Fcarrier = 400  # Frequência da Portadora
-Acarrier = 5  # Amplitude da Portadora
+Fcarrier = 3  # Frequência da Portadora
+Acarrier = 1  # Amplitude da Portadora
 Phcarrier = np.pi/2  # Fase da Portadora
 carrier = Acarrier*np.cos(2*np.pi*Fcarrier*n2 + Phcarrier)  # Senóide
 plt.figure(figsize=(12, 4))
@@ -83,8 +85,8 @@ plt.show()
 
 
 # Criação do Sinal Portadora de Transmissão2
-Fcarrier2 = 100  # Frequência da Portadora2
-Acarrier2 = 5  # Amplitude da Portadora2
+Fcarrier2 = 1  # Frequência da Portadora2
+Acarrier2 = 1  # Amplitude da Portadora2
 Phcarrier2 = np.pi/2  # Fase da Portadora2
 carrier2 = Acarrier2*np.cos(2*np.pi*Fcarrier2*n2 + Phcarrier2)
 plt.figure(figsize=(12, 4))
@@ -107,6 +109,10 @@ plt.show()
 # Espectros do sinal Modulado 1
 Spectres.generate_spectres(path=caminho, signal=s1, Fs=Fs, stypeName='Modulado_Sinal_1')
 
+# Salvar sinal Modulado 1
+librosa.output.write_wav(caminho + arquivo_audio1 + '_modulado1.wav', s1, Fs)
+
+
 # Modulação Sinal de Audio 2 com Portadora2(Carrier2)
 s2 = carrier2 * signal2
 plt.figure(figsize=(12, 4))
@@ -119,6 +125,9 @@ plt.show()
 
 # Espectros do sinal Modulado 2
 Spectres.generate_spectres(path=caminho, signal=s2, Fs=Fs, stypeName='Modulado_Sinal_2')
+
+# Salvar sinal Modulado 1
+librosa.output.write_wav(caminho + arquivo_audio2 + '_modulado2.wav', s2, Fs)
 
 # Somatório dos Sinais Modulados
 sinal_somado = s1 + s2
@@ -217,20 +226,20 @@ plt.xlabel('Tempo(s)')
 plt.ylabel('Amplitude')
 plt.show()
 # Salvar Audio
-librosa.output.write_wav(caminho + arquivo_audio2 + '_saida.wav', x, Fs)
+librosa.output.write_wav(caminho + arquivo_audio1 + '_saida.wav', x, Fs)
 
 
 # Erro Medio Quadratico(MSE)
-erro = metrics.mean_squared_error(x, signal2_orig)
+erro = metrics.mean_squared_error(x, signal1_orig)
 print('Erro Medio Quadratico(MSE): ', erro)
 
 
 #Calculo de SNR
 avgPower1 = 0
 avgPower2 = 0
-for i in signal2_orig:
+for i in signal1_orig:
     avgPower1 += i ** 2
 for i in x:
     avgPower2 += i ** 2
 
-print('SNR: ', 10 * np.log10(avgPower1 / len(signal2_orig) / (avgPower2 / len(x))))
+print('SNR: ', 10 * np.log10(avgPower1 / len(signal1_orig) / (avgPower2 / len(x))))
