@@ -71,8 +71,8 @@ Fs = 8000
 n2 = np.arange(0, SimTime, 1/Fs)  # Array de Amostras Após o Downsampling
 
 # Criação do Sinal Portadora de Transmissão1
-Fcarrier = 6  # Frequência da Portadora
-Acarrier = 1  # Amplitude da Portadora
+Fcarrier = 400  # Frequência da Portadora
+Acarrier = 5  # Amplitude da Portadora
 Phcarrier = np.pi/2  # Fase da Portadora
 carrier = Acarrier*np.cos(2*np.pi*Fcarrier*n2 + Phcarrier)  # Senóide
 plt.figure(figsize=(12, 4))
@@ -83,8 +83,8 @@ plt.show()
 
 
 # Criação do Sinal Portadora de Transmissão2
-Fcarrier2 = 12  # Frequência da Portadora2
-Acarrier2 = 3  # Amplitude da Portadora2
+Fcarrier2 = 100  # Frequência da Portadora2
+Acarrier2 = 5  # Amplitude da Portadora2
 Phcarrier2 = np.pi/2  # Fase da Portadora2
 carrier2 = Acarrier2*np.cos(2*np.pi*Fcarrier2*n2 + Phcarrier2)
 plt.figure(figsize=(12, 4))
@@ -132,7 +132,7 @@ plt.show()
 
 
 
-# Filtro Passa-Faixa
+# Filtro Passa-Faixa, obter sinal1
 gpass= 3 # Ripple na banda de passagem
 gstop= 40 # Atenuação na banda de rejeição
 fs1=9000 # Frequências de rejeição
@@ -184,7 +184,7 @@ plt.show()
 #plt.ylabel('Amplitude')
 #plt.plot(n2, y)
 
-# Demodulação do sinal Somado
+# Demodulação do sinal Somado, obter sinal1
 h1 = filtered_signal * np.cos(2*np.pi*Fcarrier*n2 + np.pi/2)
 plt.figure(figsize=(12, 4))
 plt.plot(n2, h1)
