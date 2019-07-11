@@ -9,16 +9,20 @@ from sklearn import metrics
 
 # Setar diretório e arquivo
 caminho = 'C:/Users/Maria Luize/Downloads/blocos engcomp/Git_Projects/Filter-Project/Data/'
-arquivo_audio1 = "High-pitch-sound"
-arquivo_audio2 = "queen_of_the_night_16kHz"
+arquivo_audio1 = "queen_of_the_night_16kHz"
+arquivo_audio2 = "Saida_Voz02_16KHz"
+carriervoz2 = "High-pitch-sound"
 spf1 = wave.open(caminho + arquivo_audio1 + '.wav', 'rb')
 spf2 = wave.open(caminho + arquivo_audio2 + '.wav', 'rb')
+spf3 = wave.open(caminho + carriervoz2 + '.wav', 'rb')
 
 # Caso Stereo
 if spf1.getnchannels() == 2:
     spf1 = spf1.mean(axis=1)
 elif spf2.getnchannels() == 2:
     spf2 = spf2.mean(axis=1)
+elif spf3.getnchannels() == 2:
+    spf3 = spf3.mean(axis=1)
 
 # Parâmetros Gerais da Simulação
 F_Amostragem = 16000  # Frequência de Amostragem Inicial dos Audios
@@ -30,6 +34,8 @@ sz = F_Amostragem * SimTime  # Taxa do Projeto (Hz) (Para os sinais de audio ter
 
 signal1 = np.frombuffer(spf1.readframes(sz), dtype=np.int16)  # Carregar sinal 1
 signal2 = np.frombuffer(spf2.readframes(sz), dtype=np.int16)  # Carregar sinal 2
+signal3 = np.frombuffer(spf3.readframes(sz), dtype=np.int16)  # Carregar sinal 3
+signal3_orig =signal3
 signal2_orig =signal2
 signal1_orig = signal1
 
@@ -45,6 +51,12 @@ plt.title('Sinal Modulante 2')
 plt.plot(n, signal2)
 plt.show()
 
+# sinal de Audio 3(Carrier para voz2)
+plt.figure(figsize=(12, 4))
+plt.title('Sinal Portadora voz2')
+plt.plot(n, signal3)
+plt.show()
+
 # Downsampling do Sinal 1
 M = 2  # Fator de dizimação
 signal1 = sgn.decimate(signal1, M)  # Dizimação de parte do Sinal
@@ -58,7 +70,7 @@ signal2 = sgn.decimate(signal2, M)  # Dizimação de parte do Sinal
 Fs = 8000
 n2 = np.arange(0, SimTime, 1/Fs)  # Array de Amostras Após o Downsampling
 
-# Criação do Sinal Portadora de Transmissão
+# Criação do Sinal Portadora de Transmissão1
 Fcarrier = 6  # Frequência da Portadora
 Acarrier = 1  # Amplitude da Portadora
 Phcarrier = np.pi/2  # Fase da Portadora
